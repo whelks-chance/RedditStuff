@@ -72,11 +72,11 @@ def decode(encrypted):
             decoded += decoded_char
     return decoded
 
-text_block = 'this is a long piece of text to hide some ' \
-             'words in, because I apparently don\'t have anything better to do and now this ' \
-             'sentence needs to be longer. There is a limitation that there needs to be 8 times more useless ' \
-             'text than secret message.'
-the_secret = 'password is hunter2'
+text_block = u'this is a long piece of text to hide some ' \
+             u'words in, because I apparently don\'t have anything better to do and now this ' \
+             u'sentence needs to be longer. There is a limitation $that there needs to be 8 times more useless ' \
+             u'text than secret message.'
+the_secret = u'password is : hunter2'
 
 encoded = encode(text_block, the_secret)
 print encoded
