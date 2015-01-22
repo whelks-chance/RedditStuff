@@ -10,13 +10,14 @@ def encode(open, secret):
 
     all_bin_vals = ''
     for letter in secret:
+        print letter
         ord_value = ord(letter)
-        # print ord_value
+        print ord_value
         bin_ord = bin(ord_value)
         bin_ord = bin_ord[2:]
-        if len(bin_ord) == 7:
-            bin_ord = '0' + bin_ord
-        # print bin_ord
+
+        bin_ord = bin_ord.zfill(8)
+        print bin_ord
 
         for bin_val in bin_ord:
             # print bin_val
@@ -73,7 +74,7 @@ block_of_text = 'this is a long piece of text to hide some ' \
             'words in, because I apparently dont have anything better to do and now this ' \
             'sentance needs to be longer. There is a limitation that there needs to be 8 times more useless' \
             'text than secret message.'
-the_secret = 'passwordhuntertwo'
+the_secret = 'passwordhunter2'
 
 encoded = encode(block_of_text, the_secret)
 print encoded
