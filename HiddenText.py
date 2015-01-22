@@ -1,3 +1,5 @@
+import math
+import random
 import requests
 
 __author__ = 'whelks_chance'
@@ -32,6 +34,7 @@ def encode(block_of_text, secret, pad=8):
         if to_encode.isalnum():
             if pointer >= len(all_bin_vals):
                 encoded_text += to_encode.lower()
+                pointer = 0
             else:
                 if all_bin_vals[pointer] == '1':
                     encoded_text += to_encode.upper()
@@ -92,7 +95,12 @@ def test():
 
 
 def hide_text_ipsum(secret, pad=8):
-    ipsum = requests.get('http://loripsum.net/api/plaintext').text
+    # assume <600 char per paragraph ipsum
+    a = len(secret) * pad
+    b = (600/a) + 1
+    ipsum = requests.get('http://loripsum.net/api/plaintext/long/' + str(b)).text
     return encode(ipsum, secret, pad)
 
-print hide_text_ipsum('This is a secret which should be hidden in a big block of ipsum')
+enc = hide_text_ipsum('This is a secret which should be hidden in a big block of ipsum')
+print enc
+print decode(enc)
