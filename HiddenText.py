@@ -1,5 +1,3 @@
-import math
-import random
 import requests
 
 __author__ = 'whelks_chance'
@@ -94,13 +92,19 @@ def test():
     print decode(encoded, pad=11)
 
 
-def hide_text_ipsum(secret, pad=8):
-    # assume <600 char per paragraph ipsum
-    a = len(secret) * pad
-    b = (600/a) + 1
-    ipsum = requests.get('http://loripsum.net/api/plaintext/long/' + str(b)).text
-    return encode(ipsum, secret, pad)
+def grab_ipsum(num_paras):
+    return requests.get('http://loripsum.net/api/plaintext/prude/long/' + str(num_paras)).text
 
-enc = hide_text_ipsum('This is a secret which should be hidden in a big block of ipsum')
+
+def hide_text_ipsum(secret, pad=8):
+    # assume <400 char per paragraph ipsum minimum
+    a = len(secret) * pad
+    b = (a/400) + 1
+    return encode(grab_ipsum(b), secret, pad)
+
+## yup, I encoded a chunk of ipsum in a larger chunk of ipsum...
+# enc = hide_text_ipsum(grab_ipsum(1))
+
+enc = hide_text_ipsum('This is a secret which should be hidden in a big block of ipsum password : hunter2')
 print enc
 print decode(enc)
