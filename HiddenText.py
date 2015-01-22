@@ -3,10 +3,10 @@ __author__ = 'whelks_chance'
 # Brain child of /u/Athox on Reddit, via /r/ProgrammerHumor
 # https://www.reddit.com/r/ProgrammerHumor/comments/2t1vlf/why_you_dont_let_programmers_design_train_stations/cnv1bgw
 
-def encode(open, secret):
-    if len(open.replace(' ', '')) < (len(secret.replace(' ', '')) * 8):
-        raise Exception('Need more open text')
 
+def encode(block_of_text, secret):
+    if len(block_of_text.replace(' ', '')) < (len(secret.replace(' ', '')) * 8):
+        raise Exception('Need more open text')
 
     all_bin_vals = ''
     for letter in secret:
@@ -24,10 +24,9 @@ def encode(open, secret):
             all_bin_vals += bin_val
     print all_bin_vals
 
-    open = open.lower()
     encoded_text = ''
     pointer = 0
-    for to_encode in open:
+    for to_encode in block_of_text.lower():
         if to_encode.isalnum():
             if pointer >= len(all_bin_vals):
                 encoded_text += to_encode.lower()
@@ -42,11 +41,12 @@ def encode(open, secret):
     return encoded_text
 
 
-def split_by_n( seq, n ):
+def split_by_n(seq, n):
     """A generator to divide a sequence into chunks of n units."""
     while seq:
         yield seq[:n]
         seq = seq[n:]
+
 
 def decode(encrypted):
     encrypted = encrypted.replace(' ', '')
@@ -57,10 +57,10 @@ def decode(encrypted):
     encrypted = stripped
 
     decoded = ''
-    for text_block in split_by_n(encrypted, 8):
-        # print text_block
+    for eight_char_block in split_by_n(encrypted, 8):
+        # print eight_char_block
         block_bin = ''
-        for letter in text_block:
+        for letter in eight_char_block:
             if letter.lower() == letter:
                 block_bin += '0'
             else:
@@ -72,12 +72,12 @@ def decode(encrypted):
             decoded += decoded_char
     return decoded
 
-block_of_text = 'this is a long piece of text to hide some ' \
-            'words in, because I apparently dont have anything better to do and now this ' \
-            'sentance needs to be longer. There is a limitation that there needs to be 8 times more useless' \
-            'text than secret message.'
+text_block = 'this is a long piece of text to hide some ' \
+             'words in, because I apparently don\'t have anything better to do and now this ' \
+             'sentence needs to be longer. There is a limitation that there needs to be 8 times more useless ' \
+             'text than secret message.'
 the_secret = 'password is hunter2'
 
-encoded = encode(block_of_text, the_secret)
+encoded = encode(text_block, the_secret)
 print encoded
 print decode(encoded)
