@@ -1,3 +1,5 @@
+import requests
+
 __author__ = 'whelks_chance'
 
 # Brain child of /u/Athox on Reddit, via /r/ProgrammerHumor
@@ -22,7 +24,7 @@ def encode(block_of_text, secret, pad=8):
         for bin_val in bin_ord:
             # print bin_val
             all_bin_vals += bin_val
-    print all_bin_vals
+    # print all_bin_vals
 
     encoded_text = ''
     pointer = 0
@@ -72,14 +74,25 @@ def decode(encrypted, pad=8):
             decoded += decoded_char
     return decoded
 
-text_block = u'this is a long piece of text to hide some ' \
-             u'words in, because I  \u0A86 apparently don\'t have anything better to do and now this ' \
-             u'sentence needs to be longer. There is a limitation $that there needs to be $padding (default 8)' \
-             u' times more useless text than secret message.' \
-             u' Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' \
-             u'Sed nisi urna, auctor vitae imperdiet vel, pellentesque et nisl. '
-the_secret = u'password is : hunter2'
 
-encoded = encode(text_block, the_secret, pad=11)
-print encoded
-print decode(encoded, pad=11)
+# a test case with a high end unicode character which requires padding to 11 bits per char instead of regular 8
+def test():
+
+    text_block = u'this is a long piece of text to hide some ' \
+                 u'words in, because I  \u0A86 apparently don\'t have anything better to do and now this ' \
+                 u'sentence needs to be longer. There is a limitation $that there needs to be $padding (default 8)' \
+                 u' times more useless text than secret message.' \
+                 u' Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' \
+                 u'Sed nisi urna, auctor vitae imperdiet vel, pellentesque et nisl. '
+    the_secret = u'password is : hunter2'
+
+    encoded = encode(text_block, the_secret, pad=11)
+    print encoded
+    print decode(encoded, pad=11)
+
+
+def hide_text_ipsum(secret, pad=8):
+    ipsum = requests.get('http://loripsum.net/api/plaintext').text
+    return encode(ipsum, secret, pad)
+
+print hide_text_ipsum('This is a secret which should be hidden in a big block of ipsum')
