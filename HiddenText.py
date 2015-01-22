@@ -4,8 +4,8 @@ __author__ = 'whelks_chance'
 # https://www.reddit.com/r/ProgrammerHumor/comments/2t1vlf/why_you_dont_let_programmers_design_train_stations/cnv1bgw
 
 
-def encode(block_of_text, secret):
-    if len(block_of_text.replace(' ', '')) < (len(secret.replace(' ', '')) * 8):
+def encode(block_of_text, secret, pad=8):
+    if len(block_of_text.replace(' ', '')) < (len(secret.replace(' ', '')) * pad):
         raise Exception('Need more open text')
 
     all_bin_vals = ''
@@ -16,7 +16,7 @@ def encode(block_of_text, secret):
         bin_ord = bin(ord_value)
         bin_ord = bin_ord[2:]
 
-        bin_ord = bin_ord.zfill(8)
+        bin_ord = bin_ord.zfill(pad)
         # print bin_ord
 
         for bin_val in bin_ord:
@@ -48,7 +48,7 @@ def split_by_n(seq, n):
         seq = seq[n:]
 
 
-def decode(encrypted):
+def decode(encrypted, pad=8):
     encrypted = encrypted.replace(' ', '')
     stripped = ''
     for ch in encrypted:
@@ -57,7 +57,7 @@ def decode(encrypted):
     encrypted = stripped
 
     decoded = ''
-    for eight_char_block in split_by_n(encrypted, 8):
+    for eight_char_block in split_by_n(encrypted, pad):
         # print eight_char_block
         block_bin = ''
         for letter in eight_char_block:
@@ -73,11 +73,13 @@ def decode(encrypted):
     return decoded
 
 text_block = u'this is a long piece of text to hide some ' \
-             u'words in, because I apparently don\'t have anything better to do and now this ' \
-             u'sentence needs to be longer. There is a limitation $that there needs to be 8 times more useless ' \
-             u'text than secret message.'
+             u'words in, because I  \u0A86 apparently don\'t have anything better to do and now this ' \
+             u'sentence needs to be longer. There is a limitation $that there needs to be $padding (default 8)' \
+             u' times more useless text than secret message.' \
+             u' Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' \
+             u'Sed nisi urna, auctor vitae imperdiet vel, pellentesque et nisl. '
 the_secret = u'password is : hunter2'
 
-encoded = encode(text_block, the_secret)
+encoded = encode(text_block, the_secret, pad=11)
 print encoded
-print decode(encoded)
+print decode(encoded, pad=11)
