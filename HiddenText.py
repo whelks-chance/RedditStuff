@@ -6,7 +6,7 @@ __author__ = 'whelks_chance'
 # https://www.reddit.com/r/ProgrammerHumor/comments/2t1vlf/why_you_dont_let_programmers_design_train_stations/cnv1bgw
 
 
-def encode(block_of_text, secret, pad=8):
+def encode(block_of_text, secret, pad=8, alpha=False):
     if len(block_of_text.replace(' ', '')) < (len(secret.replace(' ', '')) * pad):
         raise Exception('Need more open text')
 
@@ -14,6 +14,12 @@ def encode(block_of_text, secret, pad=8):
     for letter in secret:
         # print letter
         ord_value = ord(letter)
+        # print ord_value
+        if alpha and pad == 5:
+            if ord_value == 32:
+                ord_value = 0
+            else:
+                ord_value -= 96
         # print ord_value
         bin_ord = bin(ord_value)
         bin_ord = bin_ord[2:]
@@ -51,7 +57,7 @@ def split_by_n(seq, n):
         seq = seq[n:]
 
 
-def decode(encrypted, pad=8):
+def decode(encrypted, pad=8, alpha=False):
     encrypted = encrypted.replace(' ', '')
     stripped = ''
     for ch in encrypted:
@@ -70,13 +76,21 @@ def decode(encrypted, pad=8):
                 block_bin += '1'
         # print block_bin
         # print int(block_bin, 2)
-        decoded_char = chr(int(block_bin, 2))
+
+        if alpha and pad == 5:
+            if int(block_bin, 2) == 123:
+                decoded_char = ' '
+            else:
+                decoded_char = chr(int(block_bin, 2) + 96)
+        else:
+            decoded_char = chr(int(block_bin, 2))
         if ord(decoded_char) != 0:
             decoded += decoded_char
     return decoded
 
 
 # a test case with a high end unicode character which requires padding to 11 bits per char instead of regular 8
+# random punjabi char in there \u0A86
 def test():
 
     text_block = u'this is a long piece of text to hide some ' \
@@ -96,15 +110,33 @@ def grab_ipsum(num_paras):
     return requests.get('http://loripsum.net/api/plaintext/prude/long/' + str(num_paras)).text
 
 
-def hide_text_ipsum(secret, pad=8):
+def hide_text_ipsum(secret, pad=8, alpha=False):
     # assume <400 char per paragraph ipsum minimum
     a = len(secret) * pad
     b = (a/400) + 1
-    return encode(grab_ipsum(b), secret, pad)
+    return encode(grab_ipsum(b), secret, pad, alpha=alpha)
 
 ## yup, I encoded a chunk of ipsum in a larger chunk of ipsum...
-# enc = hide_text_ipsum(grab_ipsum(1))
-
-enc = hide_text_ipsum('This is a secret which should be hidden in a big block of ipsum password : hunter2')
+enc = hide_text_ipsum(grab_ipsum(1))
 print enc
 print decode(enc)
+
+print '\n----\n----\n'
+
+# a separate test to try high end unicode
+test()
+
+print '\n----\n----\n'
+
+# A more likely sentance hidden in a block of ipsum
+enc = hide_text_ipsum('this is a secret which should be hidden in a big block of ipsum password hunter2')
+print enc
+print decode(enc)
+
+print '\n----\n----\n'
+
+# See how much we can squeeze into a tweet length 160 chars,
+# using 5 bits of unicode and shifting up to the std alpha chars
+enc = encode(grab_ipsum(1)[:160], 'the password is huntertwo ', pad=5, alpha=True)
+print enc
+print decode(enc, pad=5, alpha=True)
